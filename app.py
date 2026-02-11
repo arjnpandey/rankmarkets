@@ -2,8 +2,12 @@
 Streamlit UI for the Prediction Market Explorer.
 """
 
+import os
 import streamlit as st
 from datetime import datetime, timezone
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from scraper import load_cached_events, run_scraper, PARENT_CATEGORIES
 from agents import (
@@ -17,6 +21,23 @@ from agents import (
 )
 
 st.set_page_config(page_title="Market Explorer", page_icon="📊", layout="wide")
+
+# --- Password gate ---
+APP_PASSWORD = os.environ.get("APP_PASSWORD", "")
+
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.title("Prediction Market Explorer")
+    pwd = st.text_input("Enter password", type="password")
+    if st.button("Login", type="primary"):
+        if pwd == APP_PASSWORD:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("Wrong password.")
+    st.stop()
 
 st.title("Prediction Market Explorer")
 st.caption("Search Kalshi & Polymarket with natural language")
