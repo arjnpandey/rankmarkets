@@ -1,0 +1,5 @@
+google-genai
+streamlit
+requests
+python-dotenv
+numpy
